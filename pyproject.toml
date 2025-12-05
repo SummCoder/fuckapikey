@@ -1,0 +1,20 @@
+[project]
+name = "fuckapikey"
+version = "0.1.0"
+description = "一个基于 Python 的现代化命令行工具，用于安全、快捷地管理您的 API Keys。"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.3.1",
+    "rapidfuzz>=3.14.3",
+    "rich>=14.2.0",
+]
+
+[project.scripts]
+# 这里定义命令别名
+# 格式: 命令名 = "包名.文件名:函数名"
+fuckapi = "fuckapikey.main:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
