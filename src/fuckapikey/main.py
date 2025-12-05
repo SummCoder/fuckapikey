@@ -4,15 +4,24 @@ from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt, Confirm
 from rapidfuzz import process, fuzz
+from pathlib import Path
 
 # --- 配置部分 ---
-DB_NAME = "apikeys.db"
+# 1. 获取当前用户的主目录 (C:\Users\xxx)
+USER_HOME = Path.home()
+# 2. 定义存放目录名为 .fuckapi
+APP_DIR = USER_HOME / ".fuckapi"
+
+# 3. 定义完整的数据库文件路径
+DB_PATH = APP_DIR / "apikeys.db"
+
 console = Console()
 
 # --- 数据库操作 ---
 def init_db():
     """初始化数据库表结构"""
-    conn = sqlite3.connect(DB_NAME)
+    APP_DIR.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(DB_PATH)) 
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS keys (
@@ -27,7 +36,7 @@ def init_db():
 def add_key_db(name, value, description):
     """写入数据库"""
     try:
-        conn = sqlite3.connect(DB_NAME)
+        conn = sqlite3.connect(str(DB_PATH))
         cursor = conn.cursor()
         cursor.execute("INSERT OR REPLACE INTO keys (name, value, description) VALUES (?, ?, ?)", 
                        (name, value, description))
@@ -40,7 +49,7 @@ def add_key_db(name, value, description):
 
 def get_all_keys_db():
     """获取所有 Keys"""
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
     cursor.execute("SELECT name, value, description FROM keys")
     results = cursor.fetchall()
@@ -49,7 +58,7 @@ def get_all_keys_db():
 
 def get_key_db(name):
     """获取单个 Key"""
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
     cursor.execute("SELECT name, value, description FROM keys WHERE name = ?", (name,))
     result = cursor.fetchone()
