@@ -1,4 +1,4 @@
-# 🔑 API Key Manager CLI
+# 🔑 Fuck API Key
 
 一个基于 Python 的现代化命令行工具，用于安全、快捷地管理您的 API Keys。
 
