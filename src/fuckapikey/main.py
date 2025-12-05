@@ -47,6 +47,20 @@ def add_key_db(name, value, description):
         console.print(f"[red]Error saving key: {e}[/red]")
         return False
 
+def delete_key_db(name):
+    """从数据库删除"""
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM keys WHERE name = ?", (name,))
+        rows_affected = cursor.rowcount
+        conn.commit()
+        conn.close()
+        return rows_affected > 0
+    except Exception as e:
+        console.print(f"[red]Error deleting key: {e}[/red]")
+        return False
+
 def get_all_keys_db():
     """获取所有 Keys"""
     conn = sqlite3.connect(str(DB_PATH))
@@ -162,6 +176,47 @@ def add(name, value, desc):
         action_text = "更新" if name in all_names else "新建"
         console.print(f"[bold green]✔ 成功{action_text} API Key: [white]{name}[/white][/bold green]")
 
+@cli.command()
+@click.argument('name')
+@click.option('--force', '-f', is_flag=True, help='强制删除，不进行询问')
+def delete(name, force):
+    """
+    删除一个 API Key。
+    """
+    # 1. 先检查是否存在
+    key_data = get_key_db(name)
+    
+    if not key_data:
+        # 如果不存在，尝试模糊匹配推荐
+        all_data = get_all_keys_db()
+        all_names = [row[0] for row in all_data]
+        suggestion = find_similar_key(name, all_names)
+        
+        console.print(f"[red]✘ 找不到名为 '{name}' 的 Key。[/red]")
+        if suggestion:
+            if Confirm.ask(f"[bold green]➜ 您是不是想删除: '{suggestion}' ?[/bold green]"):
+                name = suggestion
+                key_data = get_key_db(name) # 重新获取数据
+            else:
+                return
+        else:
+            return
+
+    # 2. 确认删除 (除非使用了 --force)
+    if not force:
+        console.print(f"\n[bold red]⚠ 警告: 即将删除 Key[/bold red]")
+        console.print(f"Name: [cyan]{name}[/cyan]")
+        console.print(f"Desc: [dim]{key_data[2]}[/dim]")
+        
+        if not Confirm.ask("确认删除吗？"):
+            console.print("[yellow]已取消操作。[/yellow]")
+            return
+
+    # 3. 执行删除
+    if delete_key_db(name):
+        console.print(f"[bold green]✔ 已成功删除: {name}[/bold green]")
+    else:
+        console.print(f"[bold red]✘ 删除失败。[/bold red]")
 
 @cli.command()
 @click.option('--show-values', is_flag=True, help='显示真实的 Key 值（默认隐藏）')
