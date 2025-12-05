@@ -32,7 +32,7 @@
 
 3. 现在您可以直接在终端输入命令：
    ```bash
-   apikey list
+   fuckapi list
    ```
 
 ### 方式二：开发模式
@@ -47,7 +47,7 @@
 2. **运行脚本**:
    使用 `uv run` 在虚拟环境中执行命令：
    ```bash
-   uv run apikey list
+   uv run fuckapi list
    ```
 
 ## 📖 使用指南
@@ -57,13 +57,13 @@
 交互式地添加一个新的 API Key。系统会自动检测您是否正在重复创建或覆盖已有的 Key。
 
 ```bash
-apikey add
+fuckapi add
 ```
 
 或者使用单行命令：
 
 ```bash
-apikey add -n "openai_gpt4" -v "sk-xxxxxx" -d "GPT-4 生产环境 Key"
+fuckapi add -n "openai_gpt4" -v "sk-xxxxxx" -d "GPT-4 生产环境 Key"
 ```
 
 > **智能防重**: 如果您输入了 `openai_gtp4` (拼写错误)，而库中已有 `openai_gpt4`，工具会提示您：
@@ -76,14 +76,14 @@ apikey add -n "openai_gpt4" -v "sk-xxxxxx" -d "GPT-4 生产环境 Key"
 **精确/模糊查询:**
 ```bash
 # 假设库里有 'github_token'
-apikey get github_toke  
+fuckapi get github_toke  
 # -> 系统提示: ➜ 您是不是要找: 'github_token' ?
 ```
 
 **语义搜索:**
 ```bash
 # 假设您记不住名字，只记得是用于 "测试环境"
-apikey get "测试环境"
+fuckapi get "测试环境"
 # -> 系统列出所有描述中包含 "测试环境" 的 Keys
 ```
 
@@ -92,13 +92,13 @@ apikey get "测试环境"
 查看当前存储的所有 Key。默认情况下，Key 的值会被隐藏（脱敏）。
 
 ```bash
-apikey list
+fuckapi list
 ```
 
 如果需要查看完整的值：
 
 ```bash
-apikey list --show-values
+fuckapi list --show-values
 ```
 
 ## ⚙️ 项目配置 (pyproject.toml)
@@ -115,8 +115,7 @@ dependencies = [
 ]
 
 [project.scripts]
-apikey = "apikey_manager:cli" 
-# 注意: 如果您的主文件是 apikey_manager.py，入口点应指向其中的 cli 函数
+fuckapi = "fuckapikey.main:cli"
 ```
 
 ## 📂 数据存储
